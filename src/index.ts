@@ -70,6 +70,11 @@ const outputStream = fs.createWriteStream(`${outputFolder}/${configFile.fwdata}`
 const s = new sanitize.Sanitize();
 let numRenames = 0;
 
+
+/// testing
+//let test = '龙卷风🌪️';
+//let testOut = s.convertAudioFileName(test);
+
 console.info(`Processing...`);
 // For each line in the original fwdata file
 lineReader.on('line', function (line) {
@@ -80,6 +85,13 @@ lineReader.on('line', function (line) {
   // Try to rename mp3/m4a files if they exist
   if (!(out.originalAudioName === out.newAudioName) &&
       fs.existsSync(`${outputFolder}/${out.originalAudioName}`)) {
+
+    // Check if new name already exists
+    if (fs.existsSync(`${outputFolder}/${out.newAudioName}`)) {
+      console.error(`${out.originalAudioName} already exists. Exiting`);
+      process.exit(1);
+    }
+
     fs.renameSync(
       `${outputFolder}/${out.originalAudioName}`,
       `${outputFolder}/${out.newAudioName}`, function(err) {
@@ -87,12 +99,17 @@ lineReader.on('line', function (line) {
       });
     numRenames++;
   }
+
+  /*
+  if (numRenames > configFile.stop!) {
+    console.info(`Ending after ${numRenames} renames`);
+    lineReader.close();
+  }*/
+
 })
 
 // Post processing
 inputStream.on('end', function() {
-  // TODO: Validate renamed files not duplicated
-
   // Write out mapping file
   s.writeMapping();
 
