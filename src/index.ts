@@ -29,18 +29,16 @@ try {
 
 // Debugging parameters
 const options = program.opts();
-const configJSON = `${process.cwd()}/config.json`;
 
-// Check if config.json file exists
-if (!fs.pathExists(configJSON)) {
-  console.error(`Can't open config.json file`);
-  process.exit(1);
+if (!fs.existsSync('./samples')) {
+  console.error(`samples/ doesn't exist`);
+  process.exit(1)
 }
 
 ////////////////////////////////////////////////////////////////////
 // Routing commands to functions
 ////////////////////////////////////////////////////////////////////
-
+const configJSON = `${process.cwd()}/config.json`;
 const configFile = readJSON(configJSON);
 config.validateFile(configFile);
 
@@ -72,6 +70,7 @@ const outputStream = fs.createWriteStream(`${outputFolder}/${configFile.fwdata}`
 const s = new sanitize.Sanitize();
 let numRenames = 0;
 
+console.info(`Processing...`);
 // For each line in the original fwdata file
 lineReader.on('line', function (line) {
   let out = s.sanitizeLine(line);
@@ -86,7 +85,7 @@ lineReader.on('line', function (line) {
       `${outputFolder}/${out.newAudioName}`, function(err) {
         if (err) throw err;
       });
-    numRenames++;  
+    numRenames++;
   }
 })
 
@@ -108,6 +107,12 @@ inputStream.on('end', function() {
 ////////////////////////////////////////////////////////////////////
 
 function readJSON(file) {
+  // Check if config.json file exists
+  if (!fs.existsSync(file)) {
+    console.error(`Can't open ${file}`);
+    process.exit(1);
+  };
+
   let obj;
   try {
     obj = require(file);
