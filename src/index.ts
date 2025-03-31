@@ -43,9 +43,9 @@ const configFile = readJSON(configJSON);
 config.validateFile(configFile);
 
 // Clean previous output files and then copy samples/ to output/
-fs.removeSync('./mapping.json', { force: true });
-fs.removeSync('./output', { rescursive: true, force: true});
 try {
+  fs.removeSync('./mapping.json');
+  fs.emptyDirSync('./output');
   fs.copySync('./samples', './output', { recursive: true});
   console.info('Copied ./samples/ to ./output/');
 } catch (err) {
@@ -88,8 +88,7 @@ lineReader.on('line', function (line) {
 
     // Check if new name already exists
     if (fs.existsSync(`${outputFolder}/${out.newAudioName}`)) {
-      console.error(`${out.originalAudioName} already exists. Exiting`);
-      process.exit(1);
+      console.warn(`${out.originalAudioName} renamed to ${out.newAudioName} but it already exists.`);
     }
 
     fs.renameSync(

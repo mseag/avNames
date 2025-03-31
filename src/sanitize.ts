@@ -13,12 +13,14 @@ export type sanitizeType = {
 
 export class Sanitize {
   mapping: any; // Store mapping of original to renamed files
+  counter: number; // Increment after renames to keep all files unique
 
   // Converters
   pinyin: any;
 
   constructor() {
     this.mapping = {}; // Mapping of old audio filenames to sanitized ones
+    this.counter = 0;
     this.pinyin = require("chinese-to-pinyin"); // Converts Han script to pinyin
   }
 
@@ -94,17 +96,19 @@ export class Sanitize {
     }
 
     if (newName.match(HAN_REGEX)) {
-      // Convert Han script characters to pinyin (removing tones)
-      //console.info(`converting CJK chars in ${newName}`);
-      newName = this.pinyin(newName, { keepRest: true, removeTone: true});
+      // Convert Han script characters to pinyin (tones -> number)
+      //console.info(`converting C chars in ${newName}`);
+      newName = this.pinyin(newName, { keepRest: true, toneToNumber: true });
       //console.info(`newName now: ${newName}`);
     }
 
     if (newName.match(INVALID_CHARS_REGEX)) {
-      // Remove remaining invalid chars
-      //console.warn(`newName still contains non-Latin chars: ${newName}`);
-      newName = newName.replace(INVALID_CHARS_REGEX, "");
+      // Replace remaining invalid chars with hyphens
+      newName = newName.replace(INVALID_CHARS_REGEX, "-");
     }
+
+    // Splice in counter number to keep filenames unique
+    newName = newName.replace('.mp3', `-${this.counter++}.mp3`);
 
     //  Add filename mapping
     this.mapping[name] = newName;
