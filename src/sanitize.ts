@@ -1,6 +1,7 @@
 // Copyright 2025 SIL Global
 
 import fs from 'fs-extra';
+import * as emoji from 'node-emoji';
 import require from './cjs-require.js';
 
 export type sanitizeType = {
@@ -13,6 +14,7 @@ export type sanitizeType = {
 export class Sanitize {
   mapping: any; // Store mapping of original to renamed files
 
+  // Converters
   pinyin: any;
 
   constructor() {
@@ -22,7 +24,7 @@ export class Sanitize {
 
   /**
    * Parse a line from the fwdata file
-   * For an AudioVisual filename, convert the filename (.mp3 or .m4a) to alphanumeric 
+   * For an AudioVisual filename, convert the filename (.mp3 or .m4a) to alphanumeric
    * and add to the map of original filenames to new filenames
    * @param {string} line - line from the fwdata file
    * @returns {sanitizeType} - Object of sanitized line information
@@ -53,8 +55,8 @@ export class Sanitize {
    */
   public convertAudioFileName(name: string) : string {
     // Allowed mp3 filename characters
-    const AUDIO_FILE_REGEX = /^[a-zA-z0-9\s\-\.]*\.(mp3|m4a)$/;
-    const INVALID_CHARS_REGEX = /[^a-zA-z0-9\s\-\.]/;
+    const AUDIO_FILE_REGEX = /^[-a-zA-z0-9 .]*\.(mp3|m4a)$/;
+    const INVALID_CHARS_REGEX = /[^-a-zA-z0-9 .]/g;
 
     // Regex to test for special ranges
     const PUA_REGEX = /[\uF000-\uFFFF]/g; // Private Use Areae
@@ -68,7 +70,7 @@ export class Sanitize {
       console.error(`audio filename undefined`);
       process.exit(1);
     }
-  
+
     let newName = name;
     if (newName.match(AUDIO_FILE_REGEX)) {
       // Keep original name
@@ -84,7 +86,10 @@ export class Sanitize {
     }
 
     if (newName.match(EMOJI_REGEX)) {
-      // Remove Emoji chars
+      // Convert Emoji chars to text
+      newName = emoji.unemojify(newName);
+
+      // Remove remaining Emoji chars
       newName = newName.replace(EMOJI_REGEX, "");
     }
 
@@ -108,14 +113,14 @@ export class Sanitize {
 
   /**
    * Utility to write JSON object to file
-   * @param {JSON} obj 
-   * @param {string} filename 
-   * @returns 
+   * @param {JSON} obj
+   * @param {string} filename
+   * @returns
    */
   writeJSON(obj: any, filename : string) {
     if (Object.keys(obj)!.length == 0) {
       console.info(`object is empty. Not writing to ${filename}`);
-      return;  
+      return;
     }
 
     fs.writeFileSync('./' + filename, JSON.stringify(obj, null, 2));
@@ -142,7 +147,7 @@ export class Sanitize {
    * @returns {number}
    */
   public getMappingCount() : number {
-    let count = (this.mapping && Object.keys(this.mapping)!.length > 0) ? 
+    let count = (this.mapping && Object.keys(this.mapping)!.length > 0) ?
         Object.keys(this.mapping)!.length : 0;
     return count;
   }
