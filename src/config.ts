@@ -20,6 +20,6 @@ export function validateFile(configFile) {
   }
 
   if (configFile.stop) {
-    console.info(`Will stop after ${configFile.stop} audio files`);
+    //console.info(`Will stop after ${configFile.stop} audio files`);
   }
 }

@@ -108,7 +108,7 @@ export class Sanitize {
     }
 
     // Splice in counter number to keep filenames unique
-    newName = newName.replace('.mp3', `-${this.counter++}.mp3`);
+    newName = newName.replace(/\.(mp3|m4a)$/, `-${this.counter++}.$1`);
 
     //  Add filename mapping
     this.mapping[name] = newName;
