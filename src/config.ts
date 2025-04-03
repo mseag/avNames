@@ -3,8 +3,8 @@ import fs from 'fs-extra';
 
 // Object to hold configuration parameters
 export interface configType {
-  fwdata: string; // Path to fwdata file
-  stop?: number; // Stop after processing this many files
+  fwdata: string; // Path to fwdata file relative to samples/AudioVisual/
+  stop?:  number; // Stop after processing this many files (not implemented yet)
 }
 
 export function validateFile(configFile) {

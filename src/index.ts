@@ -3,10 +3,7 @@
 import { CommanderError, program } from 'commander';
 import * as config from './config.js';
 import * as sanitize from './sanitize.js';
-/*
-import * as html from './html.js';
-import * as img from './img.js';
-*/
+
 import fs from 'fs-extra';
 import readline from 'readline';
 import require from './cjs-require.js';
@@ -98,13 +95,6 @@ lineReader.on('line', function (line) {
       });
     numRenames++;
   }
-
-  /*
-  if (numRenames > configFile.stop!) {
-    console.info(`Ending after ${numRenames} renames`);
-    lineReader.close();
-  }*/
-
 })
 
 // Post processing
@@ -138,5 +128,3 @@ function readJSON(file) {
   }
   return obj;
 }
-
-
