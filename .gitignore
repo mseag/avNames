@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# config file
+config.json
+
+# input files
+samples/
+
+# output directory
+output/
+mapping.json
+
+# Compiled Output files
+dist/
+
+# Published artifacts
+deploy/
